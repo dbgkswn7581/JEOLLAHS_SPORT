@@ -293,4 +293,4 @@ async def earn(ctx: SlashCommand):
     else:
         await ctx.send(embed=embed)
 
-bot.run('OTcwOTQ5MTQ5MzYzMTU0OTc0.YnDY3A.feRULbkblQ-GIMeJER76l4rKW9c')
+bot.run('bot_token')

@@ -145,6 +145,152 @@ async def bet(ctx: SlashCommand, sport_num: int, bet_money: int, input_score_tea
         await ctx.send(embed)
     else:
         await ctx.send(embed=embed)
-    
 
-bot.run('bot_token')
+@slash.slash(   #경기 추가 // 관리자
+    name = '추가',
+    description = "경기를 추가합니다.",
+    options=[
+        create_option(
+            name='종목',
+            description="축구:1,농구:2,탁구:3,배드민턴:4,계주:5 중 입력(숫자로!!)",
+            option_type = 4,
+            required = True,
+        ),
+        create_option(
+            name='팀1',
+            description="3학년 8반 -> 0308",
+            option_type= 3,
+            required=True
+        ),
+        create_option(
+            name='팀2',
+            description="1학년 10반 -> 0110",
+            option_type= 3,
+            required=True
+        ),
+        create_option(
+            name='시간',
+            description="2시 20분 -> 14:20 (24시 표기)",
+            option_type= 3,
+            required=True
+        )
+    ],
+    connector={'종목':'sort', '팀1':'team1', '팀2':'team2', '시간':'time'},
+    guild_ids=channel_ids
+)
+
+async def add_sport(ctx: SlashCommand, sort: int, team1: str, team2: str, time: str):
+    from add_sport import add_sport
+    embed = add_sport(ctx, sort, team1, team2, time)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
+
+@slash.slash(   #경기 삭제 // 관리자
+    name = '삭제',
+    description = "경기를 삭제합니다.",
+    options=[
+        create_option(
+            name='번호',
+            description="경기의 인덱스 입력",
+            option_type = 4,
+            required = True,
+        )
+    ],
+    connector={'번호':'sport_index'},
+    guild_ids=channel_ids
+)
+
+async def del_sport(ctx: SlashCommand, sport_index: int):
+    from add_sport import del_sport
+    embed = del_sport(ctx, sport_index)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
+
+@slash.slash(   #경기 중 상태로 변경 // 관리자
+    name = '변경',
+    description = "경기 중인 상태로 변경합니다.",
+    options=[
+        create_option(
+            name='번호',
+            description="경기의 인덱스 입력",
+            option_type = 4,
+            required = True,
+        )
+    ],
+    connector={'번호':'sport_index'},
+    guild_ids=channel_ids
+)
+
+async def change_sport(ctx: SlashCommand, sport_index: int):
+    from add_sport import change_sport
+    embed = change_sport(ctx, sport_index)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
+        
+@slash.slash(   #경기 완료 상태로 변경 // 관리자
+    name = '종료',
+    description = "경기 완료 상태로 변경합니다.",
+    options=[
+        create_option(
+            name='번호',
+            description="경기의 인덱스 입력",
+            option_type = 4,
+            required = True,
+        ),
+        create_option(
+            name='팀1_점수',
+            description="팀1의 획득 점수 입력",
+            option_type = 4,
+            required = True,
+        ),
+        create_option(
+            name='팀2_점수',
+            description="팀2의 획득 점수 입력",
+            option_type = 4,
+            required = True,
+        ),
+        create_option(
+            name='우승팀',
+            description="팀1이 우승: 1, 팀2가 우승: 2, 무승부: 3",
+            option_type = 4,
+            required = True,
+        )
+    ],
+    connector={'번호':'sport_index', '팀1_점수':'score_team1', '팀2_점수':'score_team2','우승팀':'result'},
+    guild_ids=channel_ids
+)
+
+async def end_sport(ctx: SlashCommand, sport_index: int, score_team1: int, score_team2: int, result: int):
+    from add_sport import end_sport
+    embed = end_sport(ctx, sport_index, score_team1, score_team2, result)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
+        
+@slash.slash(   
+    name = '정산',
+    description = "본인이 배팅한 경기 중 완료된 경기의 결과를 정산합니다.",
+    guild_ids=channel_ids
+)
+
+async def earn(ctx: SlashCommand):
+    from earn import earn
+    embed = earn(ctx)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
+
+bot.run('OTcwOTQ5MTQ5MzYzMTU0OTc0.YnDY3A.feRULbkblQ-GIMeJER76l4rKW9c')

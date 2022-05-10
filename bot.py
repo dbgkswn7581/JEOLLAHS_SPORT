@@ -1,9 +1,10 @@
 from pydoc import describe
+from zipapp import create_archive
 import discord
 from discord import Intents
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
-from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_commands import create_option, create_choice
 
 bot = commands.Bot(command_prefix="!", intents=Intents.default())
 slash = SlashCommand(bot, sync_commands=True)
@@ -56,6 +57,94 @@ async def unreg(ctx: SlashCommand):
 #     from info import info
 #     embed = info(ctx)
 #     await ctx.send(embed=embed)
+
+@slash.slash(   #경기
+    name = '경기',
+    description = "예정/진행/완료된 경기에 대한 정보를 확인합니다.",
+    options=[
+        create_option(
+            name='현황',
+            description="예정/진행/종료 중 아무것도 입력하지 않으면, 기본값인 '진행'으로 지정됩니다.",
+            option_type = 3,
+            required = True,
+            choices=[
+                create_choice(
+                    name="예정",
+                    value="expect"
+                ),
+                create_choice(
+                    name="진행",
+                    value="progress"
+                ),
+                create_choice(
+                    name="종료",
+                    value="close"
+                )
+            ]
+        ),
+        create_option(
+            name='페이지',
+            description="보고 싶은 페이지를 입력하세요. 아무것도 입력하지 않으면 기본값인 1페이지를 보게 됩니다.",
+            option_type= 4,
+            required=True
+        ),       
+        
+    ],
+    connector={'현황':'choose_sport', '페이지':'input_page'},
+    guild_ids=channel_ids
+)
+
+async def sport(ctx: SlashCommand, choose_sport: str = 'expect', input_page: int = 1):   
+    from sport import sport
+    embed = sport(ctx, choose_sport, input_page)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
+        
+@slash.slash(   #배팅
+    name = '배팅',
+    description = "예정된 경기이거나 진행 중인 경기에 배팅을 합니다.",
+    options=[
+        create_option(
+            name='인덱스',
+            description="어떤 인덱스의 경기에 배팅할 건지 입력합니다.",
+            option_type = 4,
+            required = True,
+        ),
+        create_option(
+            name='배팅액',
+            description="얼만큼 배팅할 건지 입력합니다.",
+            option_type= 4,
+            required=True
+        ),
+        create_option(
+            name='예측1',
+            description="팀1이 몇 점을 얻을 지 예측합니다. 비긴다에 배팅할 경우 999를 입력합니다.",
+            option_type= 4,
+            required=True
+        ),
+        create_option(
+            name='예측2',
+            description="팀2가 몇 점을 얻을 지 예측합니다. 비긴다에 배팅할 경우 999를 입력합니다.",
+            option_type= 4,
+            required=True
+        )
+        
+    ],
+    connector={'인덱스':'sport_num', '배팅액':'bet_money', '예측1':'input_score_team1', '예측2' : 'input_score_team2'},
+    guild_ids=channel_ids
+)
+
+async def bet(ctx: SlashCommand, sport_num: int, bet_money: int, input_score_team1: int, input_score_team2: int):   
+    from bet import bet
+    embed = bet(ctx, sport_num, bet_money, input_score_team1, input_score_team2)
+    
+    if type(embed) == str: 
+        await ctx.send(embed)
+    else:
+        await ctx.send(embed=embed)
     
 
-bot.run('token')
+bot.run('bot_token')

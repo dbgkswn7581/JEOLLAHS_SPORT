@@ -15,7 +15,7 @@ def reg(ctx, num, name):
     if exist == None and exist_num == None:
         cur.execute('INSERT INTO student_info(id, number, name, money, bet) \
             VALUES(?,?,?,?,?)', \
-            (user_id, num, name, 100000, '[]'))
+            (user_id, num, name, 100000, '//0'))
         conn.commit()
         
         cur.close()

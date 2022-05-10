@@ -23,7 +23,7 @@ def sport(ctx, choose_sport, input_page):
     cur.close()
     conn.close()
     
-    pages = len(sport_list) / 10 + 1
+    pages = len(sport_list) / 5 + 1
     
     if input_page > pages:
         return "입력하신 페이지가 전체 페이지보다 큰 수입니다.\n다시 입력해주십시오."
@@ -34,7 +34,7 @@ def sport(ctx, choose_sport, input_page):
             description = "페이지 %d/%d"%(input_page, pages),
             color = 0xC295D7)
         
-        for i in sport_list[10*(input_page-1):(10*input_page)-1]:
+        for i in sport_list[5*(input_page-1):(5*input_page)]:
             embed.add_field(
                 name=sportsort_list[int(i[1])],
                 value=str(i[3]) + " vs " + str(i[4]),
@@ -45,11 +45,11 @@ def sport(ctx, choose_sport, input_page):
                 value = i[2],
                 inline=True)
             
-            result_list = [0, str(i[3]) + " win", str(i[4]) + " win", "draw"]
+            result_list = ["not_end", str(i[3]) + " win", str(i[4]) + " win", "draw"]
             
             embed.add_field(
                 name = "INDEX %d" %i[0],
-                value = result_list[int(i[8])],
+                value = str(result_list[int(i[8])]) + "\n==========",
                 inline=True)
         
         return embed
